@@ -27,6 +27,18 @@ best available device: NVIDIA **CUDA**, Apple Silicon **MPS** (Metal GPU), or **
 
 ## One-time setup
 
+### 0. Get the code
+
+Clone the repo (needs [git](https://git-scm.com) — preinstalled on macOS, or `brew install git`):
+
+```bash
+git clone https://github.com/MarvinKropf2/Stems.git
+cd Stems
+```
+
+> No git? Download the ZIP from the GitHub page (**Code → Download ZIP**), unzip it,
+> and `cd` into the folder in Terminal instead.
+
 ### 1. System packages
 
 **Linux / WSL (Ubuntu):**
@@ -91,6 +103,11 @@ Then open **http://localhost:5173**.
    a few minutes on CPU).
 3. When done, tick the stems you want, pick WAV or MP3, and download the combined file.
    Quick buttons for **Instrumental** and **Acapella** are provided too.
+
+## Troubleshooting
+
+Hitting an error during setup? See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) —
+covers the `npm install` SIX-Artifactory error and git "divergent branches" on pull.
 
 ## Notes
 
