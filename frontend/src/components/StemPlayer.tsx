@@ -191,10 +191,31 @@ export function StemPlayer({ jobId, onAudibleChange }: Props) {
     })
   }
 
+  // "Instrumental" = the drums + bass + melody group, controlled together.
+  const INSTRUMENTAL = ['drums', 'bass', 'other']
+  const instrMuted = INSTRUMENTAL.every((k) => muted.has(k))
+  const instrSoloed =
+    soloed.size === INSTRUMENTAL.length && INSTRUMENTAL.every((k) => soloed.has(k))
+
+  function toggleInstrMute() {
+    setMuted((prev) => {
+      const next = new Set(prev)
+      if (INSTRUMENTAL.every((k) => next.has(k))) INSTRUMENTAL.forEach((k) => next.delete(k))
+      else INSTRUMENTAL.forEach((k) => next.add(k))
+      return next
+    })
+  }
+
+  function toggleInstrSolo() {
+    // Solo the whole group, or clear if it's already the soloed set.
+    setSoloed(() => (instrSoloed ? new Set() : new Set(INSTRUMENTAL)))
+  }
+
   if (error) return <p className="card-error">Preview error: {error}</p>
   if (loading) return <p className="player-loading">Loading preview…</p>
 
   const audible = new Set(audibleStems())
+  const instrAudible = INSTRUMENTAL.every((k) => audible.has(k))
 
   return (
     <div className="player">
@@ -238,6 +259,27 @@ export function StemPlayer({ jobId, onAudibleChange }: Props) {
             </div>
           )
         })}
+
+        {/* Group control for the instrumental = drums + bass + melody together. */}
+        <div className={`mix-row mix-group${instrAudible ? '' : ' off'}`}>
+          <span className="mix-name">
+            Instrumental <span className="mix-sub">drums + bass + melody</span>
+          </span>
+          <button
+            className={`mix-btn${instrMuted ? ' active' : ''}`}
+            onClick={toggleInstrMute}
+            title="Mute drums + bass + melody"
+          >
+            M
+          </button>
+          <button
+            className={`mix-btn solo${instrSoloed ? ' active' : ''}`}
+            onClick={toggleInstrSolo}
+            title="Solo drums + bass + melody (vocals off)"
+          >
+            S
+          </button>
+        </div>
       </div>
     </div>
   )

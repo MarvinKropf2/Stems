@@ -360,6 +360,19 @@
   color: #14121a;
 }
 
+/* Instrumental group row spans the full mixer width. */
+.mix-group {
+  grid-column: 1 / -1;
+  border-color: var(--accent-border, rgba(192, 132, 252, 0.5));
+  background: var(--accent-bg);
+}
+.mix-sub {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
 .format-hint {
   margin-top: 8px;
   font-size: 12px;
