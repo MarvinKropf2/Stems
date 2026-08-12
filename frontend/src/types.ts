@@ -15,7 +15,7 @@ export type Format = 'wav' | 'mp3'
 
 // The four stems Demucs (htdemucs) produces, with display labels.
 export const STEMS: { key: string; label: string }[] = [
-  { key: 'vocals', label: 'Vocals' },
+  { key: 'vocals', label: 'Acapella' },
   { key: 'drums', label: 'Drums' },
   { key: 'bass', label: 'Bass' },
   { key: 'other', label: 'Melody' },

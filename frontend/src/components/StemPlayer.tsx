@@ -175,20 +175,39 @@ export function StemPlayer({ jobId, onAudibleChange }: Props) {
     if (wasPlaying) startPlayback(to)
   }
 
+  // Mute and solo are mutually exclusive per stem: turning one on clears the other.
   function toggleMute(key: string) {
+    const willMute = !muted.has(key)
     setMuted((prev) => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      willMute ? next.add(key) : next.delete(key)
       return next
     })
+    if (willMute) {
+      setSoloed((prev) => {
+        if (!prev.has(key)) return prev
+        const next = new Set(prev)
+        next.delete(key)
+        return next
+      })
+    }
   }
 
   function toggleSolo(key: string) {
+    const willSolo = !soloed.has(key)
     setSoloed((prev) => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      willSolo ? next.add(key) : next.delete(key)
       return next
     })
+    if (willSolo) {
+      setMuted((prev) => {
+        if (!prev.has(key)) return prev
+        const next = new Set(prev)
+        next.delete(key)
+        return next
+      })
+    }
   }
 
   // "Instrumental" = the drums + bass + melody group, controlled together.
@@ -198,17 +217,34 @@ export function StemPlayer({ jobId, onAudibleChange }: Props) {
     soloed.size === INSTRUMENTAL.length && INSTRUMENTAL.every((k) => soloed.has(k))
 
   function toggleInstrMute() {
+    const willMute = !instrMuted
     setMuted((prev) => {
       const next = new Set(prev)
-      if (INSTRUMENTAL.every((k) => next.has(k))) INSTRUMENTAL.forEach((k) => next.delete(k))
-      else INSTRUMENTAL.forEach((k) => next.add(k))
+      if (willMute) INSTRUMENTAL.forEach((k) => next.add(k))
+      else INSTRUMENTAL.forEach((k) => next.delete(k))
       return next
     })
+    if (willMute) {
+      setSoloed((prev) => {
+        const next = new Set(prev)
+        INSTRUMENTAL.forEach((k) => next.delete(k))
+        return next
+      })
+    }
   }
 
   function toggleInstrSolo() {
     // Solo the whole group, or clear if it's already the soloed set.
-    setSoloed(() => (instrSoloed ? new Set() : new Set(INSTRUMENTAL)))
+    if (instrSoloed) {
+      setSoloed(new Set())
+      return
+    }
+    setSoloed(new Set(INSTRUMENTAL))
+    setMuted((prev) => {
+      const next = new Set(prev)
+      INSTRUMENTAL.forEach((k) => next.delete(k))
+      return next
+    })
   }
 
   if (error) return <p className="card-error">Preview error: {error}</p>
