@@ -24,6 +24,9 @@ class Job:
     status: str = "queued"  # queued | processing | done | error
     error: str | None = None
     stems: list[str] = field(default_factory=list)
+    bpm: int | None = None
+    key: str | None = None  # Camelot notation, e.g. "8A"
+    key_musical: str | None = None  # e.g. "Am"
 
     @property
     def stems_dir(self) -> Path:
@@ -40,6 +43,9 @@ class Job:
             "status": self.status,
             "error": self.error,
             "stems": self.stems,
+            "bpm": self.bpm,
+            "key": self.key,
+            "key_musical": self.key_musical,
         }
 
 
@@ -75,6 +81,11 @@ def _worker() -> None:
             job.status = "processing"
             written = separator.separate(job.input_path, job.stems_dir)
             job.stems = written
+            # BPM/key detection is best-effort — never fail the job over it.
+            analysis = separator.analyze(job.input_path)
+            job.bpm = analysis["bpm"]
+            job.key = analysis["key_camelot"]
+            job.key_musical = analysis["key_musical"]
             job.status = "done"
         except Exception as exc:  # noqa: BLE001 - surface any failure to the UI
             job.status = "error"

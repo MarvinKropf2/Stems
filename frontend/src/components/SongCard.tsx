@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { downloadUrl } from '../api'
 import { STEMS, type Format, type Job } from '../types'
+import { StemPlayer } from './StemPlayer'
 
 function triggerDownload(url: string) {
   const a = document.createElement('a')
@@ -19,16 +20,11 @@ const STATUS_LABEL: Record<Job['status'], string> = {
 }
 
 export function SongCard({ job }: { job: Job }) {
-  const [selected, setSelected] = useState<Set<string>>(new Set())
   const [format, setFormat] = useState<Format>('wav')
+  // Stems currently audible in the mixer — this is what "Download" grabs.
+  const [audible, setAudible] = useState<string[]>(STEMS.map((s) => s.key))
 
-  function toggle(key: string) {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
-      return next
-    })
-  }
+  const onAudibleChange = useCallback((stems: string[]) => setAudible(stems), [])
 
   const isDone = job.status === 'done'
 
@@ -38,9 +34,17 @@ export function SongCard({ job }: { job: Job }) {
         <span className="card-name" title={job.filename}>
           {job.filename}
         </span>
-        <span className={`badge badge-${job.status}`}>
-          {job.status !== 'done' && job.status !== 'error' && <span className="spinner" />}
-          {STATUS_LABEL[job.status]}
+        <span className="head-right">
+          {isDone && job.bpm != null && <span className="meta-badge">{job.bpm} BPM</span>}
+          {isDone && job.key && (
+            <span className="meta-badge key" title={job.key_musical ?? undefined}>
+              {job.key}
+            </span>
+          )}
+          <span className={`badge badge-${job.status}`}>
+            {job.status !== 'done' && job.status !== 'error' && <span className="spinner" />}
+            {STATUS_LABEL[job.status]}
+          </span>
         </span>
       </div>
 
@@ -48,27 +52,12 @@ export function SongCard({ job }: { job: Job }) {
 
       {isDone && (
         <>
-          <div className="stem-grid">
-            {STEMS.map(({ key, label }) => (
-              <label key={key} className={`stem-chip${selected.has(key) ? ' on' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={selected.has(key)}
-                  onChange={() => toggle(key)}
-                />
-                {label}
-              </label>
-            ))}
-          </div>
+          <StemPlayer jobId={job.id} onAudibleChange={onAudibleChange} />
 
           <div className="card-controls">
             <div className="format-toggle">
               {(['wav', 'mp3'] as Format[]).map((f) => (
-                <button
-                  key={f}
-                  className={format === f ? 'on' : ''}
-                  onClick={() => setFormat(f)}
-                >
+                <button key={f} className={format === f ? 'on' : ''} onClick={() => setFormat(f)}>
                   {f.toUpperCase()}
                 </button>
               ))}
@@ -76,22 +65,24 @@ export function SongCard({ job }: { job: Job }) {
 
             <button
               className="btn primary"
-              disabled={selected.size === 0}
-              onClick={() =>
-                triggerDownload(downloadUrl(job.id, [...selected], format))
-              }
+              disabled={audible.length === 0}
+              onClick={() => triggerDownload(downloadUrl(job.id, audible, format))}
             >
-              Download selected{selected.size ? ` (${selected.size})` : ''}
+              Download what I'm hearing{audible.length ? ` (${audible.length})` : ''}
             </button>
           </div>
+
+          <p className="format-hint">
+            {format === 'wav'
+              ? 'WAV: lossless, keeps text tags (BPM/key/title) — no cover art.'
+              : 'MP3 320k: full tags + embedded cover art.'}
+          </p>
 
           <div className="quick-row">
             <span className="quick-label">Quick:</span>
             <button
               className="btn ghost"
-              onClick={() =>
-                triggerDownload(downloadUrl(job.id, ['drums', 'bass', 'other'], format))
-              }
+              onClick={() => triggerDownload(downloadUrl(job.id, ['drums', 'bass', 'other'], format))}
             >
               Instrumental
             </button>

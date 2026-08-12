@@ -14,3 +14,7 @@ python-multipart>=0.0.9
 # Audio I/O for combining stems
 soundfile>=0.12
 numpy>=1.24
+
+# Metadata/artwork tagging + BPM/key analysis
+mutagen>=1.47
+librosa>=0.10.2

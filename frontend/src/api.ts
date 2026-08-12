@@ -14,6 +14,11 @@ export async function fetchJobs(): Promise<Job[]> {
   return res.json()
 }
 
+/** URL for streaming a single raw stem (used by the preview mixer). */
+export function stemUrl(jobId: string, name: string): string {
+  return `/api/jobs/${jobId}/stem/${name}`
+}
+
 /** URL for downloading a combined file of the chosen stems. */
 export function downloadUrl(
   jobId: string,

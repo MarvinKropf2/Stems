@@ -62,6 +62,20 @@ def get_job(job_id: str) -> dict:
     return job.to_dict()
 
 
+@app.get("/api/jobs/{job_id}/stem/{name}")
+def get_stem(job_id: str, name: str) -> FileResponse:
+    """Serve a single raw stem WAV (used by the browser preview mixer)."""
+    job = jobs.get_job(job_id)
+    if job is None:
+        raise HTTPException(404, "job not found")
+    if job.status != "done" or name not in job.stems:
+        raise HTTPException(404, "stem not available")
+    path = separator.stem_path(job.stems_dir, name)
+    if not path.exists():
+        raise HTTPException(404, "stem file missing")
+    return FileResponse(str(path), media_type="audio/wav")
+
+
 def _label(stem_names: list[str]) -> str:
     """A friendly label for the chosen stem combination."""
     s = set(stem_names)
@@ -94,11 +108,21 @@ def download(
 
     label = _label(chosen)
     base = Path(job.filename).stem
-    out_name = f"{base} ({label}).{format}"
+
+    # Filename tag like " [128 8A]" when BPM/key are known.
+    tag_bits = " ".join(str(x) for x in (job.bpm, job.key) if x)
+    suffix = f" [{tag_bits}]" if tag_bits else ""
+    out_name = f"{base} ({label}){suffix}.{format}"
     out_path = job.out_dir / out_name
 
     try:
         separator.combine(job.stems_dir, chosen, out_path, fmt=format)
+        # Carry source tags/artwork + detected BPM/key into the output.
+        meta = separator.read_source_meta(job.input_path, fallback_title=base)
+        meta["title"] = f"{meta['title']} ({label})"
+        meta["bpm"] = job.bpm
+        meta["key"] = job.key
+        separator.tag_output(out_path, format, meta)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(500, f"combine failed: {exc}") from exc
 

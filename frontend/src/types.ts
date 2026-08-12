@@ -6,6 +6,9 @@ export interface Job {
   status: JobStatus
   error: string | null
   stems: string[]
+  bpm: number | null
+  key: string | null // Camelot, e.g. "8A"
+  key_musical: string | null // e.g. "Am"
 }
 
 export type Format = 'wav' | 'mp3'
