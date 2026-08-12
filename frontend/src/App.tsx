@@ -49,8 +49,10 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>Stems</h1>
-        <p className="tagline">Extract stems from your songs · powered by Demucs</p>
+        <h1>
+          <span className="mark">/</span>stems
+        </h1>
+        <span className="tagline">offline stem separation · demucs</span>
       </header>
 
       <Dropzone onFiles={onFiles} />

@@ -44,9 +44,11 @@ export function Dropzone({ onFiles, disabled }: Props) {
         }}
       />
       <div className="dropzone-inner">
-        <div className="dropzone-icon">🎵</div>
+        <div className="dropzone-icon" aria-hidden="true">
+          <i /><i /><i /><i /><i />
+        </div>
         <p className="dropzone-title">Drop songs here</p>
-        <p className="dropzone-sub">or click to browse — MP3, WAV, FLAC, M4A… (multiple ok)</p>
+        <p className="dropzone-sub">or click to browse — MP3, WAV, FLAC, M4A · multiple at once</p>
       </div>
     </div>
   )

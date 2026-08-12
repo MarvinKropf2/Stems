@@ -1,24 +1,42 @@
 :root {
-  --text: #9ca3af;
-  --text-h: #f3f4f6;
-  --bg: #0f1014;
-  --panel: #16171d;
-  --panel-2: #1f2028;
-  --border: #2e303a;
-  --accent: #c084fc;
-  --accent-2: #7c3aed;
-  --accent-bg: rgba(192, 132, 252, 0.15);
-  --danger: #f87171;
-  --ok: #4ade80;
+  /* Ink-dark, faintly cool palette — layered surfaces instead of flat black */
+  --bg: #0a0a0d;
+  --panel: #121217;
+  --panel-2: #191920;
+  --elev: #20212a;
+  --border: #262730;
+  --border-soft: #1d1e26;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --text: #9a9aa6;
+  --text-dim: #63636e;
+  --text-h: #f2f2f5;
 
-  font: 16px/1.5 var(--sans);
+  /* One confident accent, used sparingly */
+  --accent: #a684ff;
+  --accent-press: #8f68f0;
+  --accent-soft: rgba(166, 132, 255, 0.14);
+  --accent-line: rgba(166, 132, 255, 0.38);
+
+  --solo: #56cf9b;
+  --mute: #ef6a6a;
+
+  --sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
+
+  --r-lg: 16px;
+  --r: 11px;
+  --r-sm: 8px;
+
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--text);
   background: var(--bg);
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: none;
 }
 
 * {
@@ -28,14 +46,33 @@
 body {
   margin: 0;
   min-height: 100svh;
+  /* Faint top-lit vignette — barely there, gives depth without gloss */
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(166, 132, 255, 0.06), transparent 60%),
+    var(--bg);
 }
 
 h1 {
-  font-weight: 600;
-  color: var(--text-h);
   margin: 0;
+  color: var(--text-h);
+  font-weight: 650;
 }
 
 p {
   margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-h);
+}
+
+/* Focus visibility without the default heavy ring */
+:focus-visible {
+  outline: 2px solid var(--accent-line);
+  outline-offset: 2px;
 }
