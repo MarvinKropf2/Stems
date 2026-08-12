@@ -18,5 +18,5 @@ export const STEMS: { key: string; label: string }[] = [
   { key: 'vocals', label: 'Vocals' },
   { key: 'drums', label: 'Drums' },
   { key: 'bass', label: 'Bass' },
-  { key: 'other', label: 'Other' },
+  { key: 'other', label: 'Melody' },
 ]

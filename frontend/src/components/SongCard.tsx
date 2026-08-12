@@ -92,7 +92,8 @@ export function SongCard({ job }: { job: Job }) {
             >
               Acapella
             </button>
-            {STEMS.map(({ key, label }) => (
+            {/* "Acapella" already covers vocals-only, so skip the duplicate here. */}
+            {STEMS.filter(({ key }) => key !== 'vocals').map(({ key, label }) => (
               <button
                 key={key}
                 className="btn ghost"
