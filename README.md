@@ -104,6 +104,11 @@ Then open **http://localhost:5173**.
 3. When done, tick the stems you want, pick WAV or MP3, and download the combined file.
    Quick buttons for **Instrumental** and **Acapella** are provided too.
 
+## Troubleshooting
+
+Hitting an error during setup? See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) —
+covers the `npm install` SIX-Artifactory error and git "divergent branches" on pull.
+
 ## Notes
 
 - **Speed depends on hardware.** The app auto-selects NVIDIA CUDA → Apple Silicon
