@@ -1,0 +1,16 @@
+# PyTorch CPU build. If you add an NVIDIA GPU, install the CUDA build instead
+# (see https://pytorch.org). Demucs pulls torch/torchaudio too, but we pin here.
+torch>=2.1
+torchaudio>=2.1
+
+# Stem separation model
+demucs>=4.0.1
+
+# Web server
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+
+# Audio I/O for combining stems
+soundfile>=0.12
+numpy>=1.24
