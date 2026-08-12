@@ -17,8 +17,18 @@ import torch
 # source order is read from the model at runtime.
 STEMS = ["vocals", "drums", "bass", "other"]
 
+def _pick_device() -> str:
+    """Use the best available accelerator: NVIDIA CUDA, Apple Silicon MPS, else CPU."""
+    if torch.cuda.is_available():
+        return "cuda"
+    mps = getattr(torch.backends, "mps", None)
+    if mps is not None and mps.is_available():
+        return "mps"
+    return "cpu"
+
+
 _model = None
-_device = "cuda" if torch.cuda.is_available() else "cpu"
+_device = _pick_device()
 
 
 def _get_model():

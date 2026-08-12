@@ -22,12 +22,23 @@ the 4 stems into a single ready-to-play file for Rekordbox (or anything else).
 - **Frontend** — Vite + React (TypeScript). Drag-and-drop upload, live progress,
   per-song stem picker + format toggle.
 
+The app runs on **Linux/WSL and macOS** (and Windows via WSL). It auto-detects the
+best available device: NVIDIA **CUDA**, Apple Silicon **MPS** (Metal GPU), or **CPU**.
+
 ## One-time setup
 
-### 1. System packages (WSL/Ubuntu)
+### 1. System packages
+
+**Linux / WSL (Ubuntu):**
 
 ```bash
 sudo apt update && sudo apt install -y ffmpeg python3-pip python3-venv
+```
+
+**macOS** (with [Homebrew](https://brew.sh)):
+
+```bash
+brew install ffmpeg python node
 ```
 
 `ffmpeg` is required for reading MP3s and encoding MP3 output.
@@ -44,6 +55,14 @@ pip install -r requirements.txt
 
 > The first separation downloads the `htdemucs` model weights (~few hundred MB).
 > This happens once and needs an internet connection.
+
+> **Note (macOS):** on Apple Silicon the default `pip install -r requirements.txt`
+> gives you a PyTorch build with **MPS** GPU support — separation runs in seconds
+> instead of minutes. Nothing extra to configure; the app uses it automatically.
+>
+> **Note (Linux, CPU-only):** if `pip install -r requirements.txt` pulls a large
+> CUDA PyTorch you don't need, install the CPU build first:
+> `pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu`
 
 ### 3. Frontend dependencies
 
@@ -68,13 +87,14 @@ Then open **http://localhost:5173**.
 ## Usage
 
 1. Drag songs onto the dropzone (or click to browse). Multiple files are queued.
-2. Each song shows progress while Demucs runs (CPU: a few minutes per song).
+2. Each song shows progress while Demucs runs (seconds on a GPU/Apple Silicon,
+   a few minutes on CPU).
 3. When done, tick the stems you want, pick WAV or MP3, and download the combined file.
    Quick buttons for **Instrumental** and **Acapella** are provided too.
 
 ## Notes
 
-- No GPU here → CPU separation (a few minutes per song). If you later add an NVIDIA
-  GPU, it's used automatically.
+- **Speed depends on hardware.** The app auto-selects NVIDIA CUDA → Apple Silicon
+  MPS → CPU, in that order. GPU/Apple Silicon: seconds per song. CPU: a few minutes.
 - Generated files live under `backend/data/` (gitignored). Delete that folder to
   reclaim space.
